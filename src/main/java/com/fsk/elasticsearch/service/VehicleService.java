@@ -3,6 +3,7 @@ package com.fsk.elasticsearch.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fsk.elasticsearch.document.Vehicle;
 import com.fsk.elasticsearch.helper.Indicies;
+import com.fsk.elasticsearch.repository.VehicleRepository;
 import com.fsk.elasticsearch.search.SearchRequestDTO;
 import com.fsk.elasticsearch.search.util.SearchUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,12 @@ import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.SearchHit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,12 +34,23 @@ public class VehicleService {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Logger LOG = LoggerFactory.getLogger(VehicleService.class);
+    private final VehicleRepository vehicleRepository;
 
     private final RestHighLevelClient client;
 
     public List<Vehicle> search(final SearchRequestDTO dto) {
         final SearchRequest request = SearchUtil.buildSearchRequest(Indicies.VEHICLE_INDEX, dto);
 
+        return searchInternal(request);
+    }
+
+    public List<Vehicle> getAllVehicleCreatedSince(final Date date) {
+        final SearchRequest request = SearchUtil.buildSearchRequest(Indicies.VEHICLE_INDEX, "created", date);
+
+        return searchInternal(request);
+    }
+
+    private List<Vehicle> searchInternal(final SearchRequest request) {
         if (request == null) {
             LOG.error("Failed to build search request");
             return Collections.emptyList();
@@ -96,4 +110,7 @@ public class VehicleService {
     }
 
 
+    public List<Vehicle> getVehicleList() {
+        return vehicleRepository.findAll().getContent();
+    }
 }

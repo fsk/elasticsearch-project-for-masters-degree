@@ -5,6 +5,7 @@ import com.fsk.elasticsearch.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,8 +18,13 @@ public class EmployeeService {
         employeeRepository.save(employee);
     }
 
-    public Optional<Employee> findById(final String id) {
-        return Optional.of(employeeRepository.findById(id).get());
+    public Employee findById(final String id) {
 
+        return employeeRepository.findById(id).isPresent() ? employeeRepository.findById(id).get() : null;
+
+    }
+
+    public List<Employee> getAllEmployees() {
+        return employeeRepository.findAll().getContent();
     }
 }
