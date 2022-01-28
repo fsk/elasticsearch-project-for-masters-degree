@@ -113,4 +113,18 @@ public class VehicleService {
     public List<Vehicle> getVehicleList() {
         return vehicleRepository.findAll().getContent();
     }
+
+    public List<Vehicle> searchCreatedSince(final SearchRequestDTO dto, final Date date) {
+
+
+
+        final SearchRequest request = SearchUtil.buildSearchRequest(
+                Indicies.VEHICLE_INDEX,
+                dto,
+                date
+        );
+
+        return searchInternal(request);
+
+    }
 }

@@ -1,6 +1,7 @@
 package com.fsk.elasticsearch.controller;
 
 import com.fsk.elasticsearch.document.Vehicle;
+import com.fsk.elasticsearch.helper.VehicleFakeDataService;
 import com.fsk.elasticsearch.search.SearchRequestDTO;
 import com.fsk.elasticsearch.service.VehicleService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import java.util.List;
 public class VehicleController {
 
     private final VehicleService vehicleService;
+    private final VehicleFakeDataService vehicleFakeDataService;
 
     @GetMapping("/vehicle-list")
     public List<Vehicle> getVehicleList() {
@@ -37,9 +39,33 @@ public class VehicleController {
         return vehicleService.search(dto);
     }
 
+
     @GetMapping("/search/{date}")
-    public List<Vehicle> getAllVehicleCreatedSince(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") final Date date) {
+    public List<Vehicle> getAllVehicleCreatedSince(
+            @PathVariable
+            @DateTimeFormat(pattern = "yyyy-MM-dd")
+            final Date date
+    ) {
         return vehicleService.getAllVehicleCreatedSince(date);
     }
+
+
+
+    @PostMapping("/search-created-since/{date}")
+    public List<Vehicle> searchCreatedSince(@RequestBody final SearchRequestDTO dto,
+                                            @PathVariable
+                                            @DateTimeFormat(pattern = "yyyy-MM-dd")
+                                            final Date date) {
+
+        return vehicleService.searchCreatedSince(dto, date);
+
+    }
+
+
+    @PostMapping("/insert-fake-data")
+    public void insertFakeData() {
+        vehicleFakeDataService.insertFakeData();
+    }
+
 
 }
